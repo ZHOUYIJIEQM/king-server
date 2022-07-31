@@ -1,8 +1,20 @@
 const express = require('express')
 const cors = require('cors')
 const app = express()
+const dbConnect = require("./utils/db.js");
+const webApi = require("./routes/web/index.js");
+
+// 自定义bcrypt密钥字符串
+app.set('secret', 'kingAdminNode123456')
+
+// 设置跨域
 app.use(cors())
+// 请求体转为json对象
 app.use(express.json())
+// 连接数据库
+dbConnect()
+// 移动端 api
+webApi(app)
 
 app.post(
   '/login',
