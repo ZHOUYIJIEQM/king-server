@@ -6,12 +6,7 @@ const heroSchema = new mongoose.Schema({
   avatar: { type: String },
   banner: { type: String },
   photo: { type: String }, 
-  cate: [
-    {
-      type: mongoose.SchemaTypes.ObjectId,
-      ref: "Category",
-    },
-  ],
+  cate: [ { type: mongoose.SchemaTypes.ObjectId, ref: "Category", }, ],
   //难度等级等
   scores: {
     difficulty: { type: Number, default: 0 },

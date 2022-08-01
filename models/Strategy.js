@@ -11,7 +11,7 @@ const strategySchema = new mongoose.Schema(
     // 视频时长
     iTime: String,
     // 分类
-    cate: [{ type: mongoose.SchemaTypes.ObjectId }],
+    cate: [{ type: mongoose.SchemaTypes.ObjectId, ref: "Category" }],
     // 对应英雄
     heros: [{ type: String }],
     // 视频id

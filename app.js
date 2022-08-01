@@ -3,6 +3,7 @@ const cors = require('cors')
 const app = express()
 const dbConnect = require("./utils/db.js");
 const webApi = require("./routes/web/index.js");
+const adminApi = require("./routes/admin/index.js");
 
 // 自定义bcrypt密钥字符串
 app.set('secret', 'kingAdminNode123456')
@@ -13,8 +14,10 @@ app.use(cors())
 app.use(express.json())
 // 连接数据库
 dbConnect()
-// 移动端 api
+// 移动端接口
 webApi(app)
+// 后台管理接口
+adminApi(app)
 
 app.post(
   '/login',
