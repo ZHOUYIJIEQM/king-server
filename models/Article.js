@@ -1,11 +1,12 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-const articleSchema = new mongoose.Schema(
+const articleSchema = Schema(
   {
     // 文章id
     iId: String,
     title: String,
-    cate: [{ type: mongoose.SchemaTypes.ObjectId, ref: "Category" }],
+    cate: [{ type: Schema.Types.ObjectId, ref: "Category" }],
     // url: String,
     content: String,
     createdTime: String,

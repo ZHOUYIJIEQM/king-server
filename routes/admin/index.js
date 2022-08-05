@@ -1,4 +1,5 @@
 module.exports = (app) => {
+  const mongoose = require("mongoose")
   const express = require("express");
   const path = require("path");
   const jwt = require("jsonwebtoken");
@@ -83,23 +84,82 @@ module.exports = (app) => {
       const skipNum = (pageNum - 1) * pageSize
       const total = await allModel[req.modelName].countDocuments()
       let data = null
-      if (req.query.name) {
-        data = await allModel[req.modelName].find({ name: req.query.name })
-          .skip(skipNum)
-          .limit(pageSize)
-          .populate({path: 'cate', options: {strictPopulate: false}})
-          // .populate("cate")
-        } else {
-          data = await allModel[req.modelName].find()
-          .skip(skipNum)
-          .limit(pageSize)
-          .populate({path: 'cate', options: {strictPopulate: false}})
+      
+      let q = allModel[req.modelName].find().select('-__v')
+      // 处理排序
+      if (req.query?.sortItem?.length && req.query?.orderType?.length) {
+        let orderType = 0
+        if (req.query?.orderType === 'ascending') {
+          orderType = 1
+        }
+        if (req.query?.orderType === 'descending') {
+          orderType = -1
+        }
+        // console.log({[req.query.sortItem]: orderType});
+        q = q.sort({[req.query.sortItem]: orderType})
       }
+      if (["Article", "Strategy"].includes(req.modelName)) {
+        q.skip(skipNum)
+          .limit(pageSize)
+          .populate('cate')
+      } else if (["Hero"].includes(req.modelName)) {
+        data = await allModel[req.modelName].aggregate([
+          {
+            $lookup: {
+              from: "Category",
+              localField: "cate",
+              foreignField: "_id",
+              as: "cate",
+            },
+          },
+          {
+            $lookup: {
+              from: "Summoner",
+              localField: "summonersId",
+              foreignField: "id",
+              as: "summonersId",
+            },
+          },
+          {
+            $lookup: {
+              from: "Inscription",
+              localField: "InscriptionId",
+              foreignField: "id",
+              as: "InscriptionId",
+            },
+          },
+          {
+            $lookup: {
+              from: "Items",
+              localField: "downWind.equipment",
+              foreignField: "itemId",
+              as: "downWindEquipment",
+            },
+          },
+          {
+            $lookup: {
+              from: "Items",
+              localField: "upWind.equipment",
+              foreignField: "itemId",
+              as: "upWindEquipment",
+            },
+          },
+          { $skip: Number(skipNum) },
+          { $limit: Number(pageSize) }
+        ])
+        return res.send({total, data})
+      } else {
+        q.skip(skipNum)
+          .limit(pageSize)
+      }
+      data = await q
+      
       res.send({
         total, data
       })
     },
     async (req, res) => {
+      console.log('next');
       // 分类
       if (req.modelName === "Category") {
         const allCate = await allModel[req.modelName].find({}).select('-__v').lean()
@@ -133,15 +193,6 @@ module.exports = (app) => {
         res.send(cateTree)
       }
 
-      // 
-      if (req.modelName === "Hero") {
-        
-      }
-      
-      // 文章
-      if (req.modelName === "Article") {
-        
-      }
       
       
     }
@@ -170,10 +221,65 @@ module.exports = (app) => {
     "/:id",
     async (req, res) => {
       try {
-        const model = await allModel[req.modelName].findById(req.params.id)
-        res.send(model)
+        if (["Hero"].includes(req.modelName)) {
+          let hero = await allModel[req.modelName].aggregate([
+            {
+              $match: {
+                _id: mongoose.Types.ObjectId(req.params.id)
+              }
+            },
+            {
+              $lookup: {
+                from: "Category",
+                localField: "cate",
+                foreignField: "_id",
+                as: "cate",
+              },
+            },
+            {
+              $lookup: {
+                from: "Summoner",
+                localField: "summonersId",
+                foreignField: "id",
+                as: "summonersId",
+              },
+            },
+            {
+              $lookup: {
+                from: "Inscription",
+                localField: "InscriptionId",
+                foreignField: "id",
+                as: "InscriptionId",
+              },
+            },
+            {
+              $lookup: {
+                from: "Items",
+                localField: "downWind.equipment",
+                foreignField: "itemId",
+                as: "downWindEquipment",
+              },
+            },
+            {
+              $lookup: {
+                from: "Items",
+                localField: "upWind.equipment",
+                foreignField: "itemId",
+                as: "upWindEquipment",
+              },
+            }
+          ])
+          if (hero.length) {
+            return res.send(hero[0])
+          } else {
+            return res.status(404).send({message: '没有该英雄!'})
+          }
+        } else {
+          const model = await allModel[req.modelName].findById(req.params.id)
+          return res.send(model)
+        }
       } catch (error) {
-        console.log('通过 id 查找错误!');
+        console.log('通过 id 查找错误!', error);
         return res.status(403).send({ message: '操作有误!' })
       }
     }

@@ -1,9 +1,10 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-const categorySchema = new mongoose.Schema({
+const categorySchema = Schema({
   name: { type: String, require: true },
   parent: {
-    type: mongoose.SchemaTypes.ObjectId,
+    type: Schema.Types.ObjectId,
     default: null,
   },
   desc: String,

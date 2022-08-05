@@ -1,12 +1,14 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-const heroSchema = new mongoose.Schema({
+const heroSchema = Schema({
   name: { type: String },
+  nickname: { type: String },
   ename: { type: String },
   avatar: { type: String },
   banner: { type: String },
   photo: { type: String }, 
-  cate: [ { type: mongoose.SchemaTypes.ObjectId, ref: "Category", }, ],
+  cate: [ { type: Schema.Types.ObjectId, ref: "Category", }, ],
   //难度等级等
   scores: {
     difficulty: { type: Number, default: 0 },
@@ -48,7 +50,7 @@ const heroSchema = new mongoose.Schema({
   downWind: {
     equipment: [
       {
-        // type: mongoose.SchemaTypes.ObjectId,
+        // type: Schema.Types.ObjectId,
         // todo: 依赖武器, 待修改
         type: String,
         default: "",
@@ -60,7 +62,7 @@ const heroSchema = new mongoose.Schema({
   upWind: {
     equipment: [
       {
-        // type: mongoose.SchemaTypes.ObjectId,
+        // type: Schema.Types.ObjectId,
         // todo: 依赖武器, 待修改
         type: String,
         default: "",

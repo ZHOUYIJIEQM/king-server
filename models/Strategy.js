@@ -1,6 +1,7 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-const strategySchema = new mongoose.Schema(
+const strategySchema = Schema(
   {
     // 标题头
     name: { type: String, required: true },
@@ -11,7 +12,7 @@ const strategySchema = new mongoose.Schema(
     // 视频时长
     iTime: String,
     // 分类
-    cate: [{ type: mongoose.SchemaTypes.ObjectId, ref: "Category" }],
+    cate: [{ type: Schema.Types.ObjectId, ref: "Category" }],
     // 对应英雄
     heros: [{ type: String }],
     // 视频id

@@ -1,6 +1,7 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-const summonerSchema = new mongoose.Schema({
+const summonerSchema = Schema({
   id: { type: String, require: true },
   name: { type: String, require: true },
   rank: String,

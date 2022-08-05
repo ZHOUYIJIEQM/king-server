@@ -1,6 +1,7 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-const InscriptionSchema = new mongoose.Schema({
+const InscriptionSchema = Schema({
   id: String,
   type: String,
   grade: String,

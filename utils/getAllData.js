@@ -214,10 +214,7 @@ class Spider {
             let heroInfoData = await this.getHeroInfo(html, ename);
             await allModel.Hero.insertMany([heroInfoData]);
             console.log(
-              this.colorLog(
-                `第${++index}个 ${heroName}: ${url} 英雄详情!`,
-                "green"
-              )
+              this.colorLog(`第${++index}个 ${heroName}: ${url} 英雄详情!`, "green")
             );
           } else {
             console.log(this.colorLog(`获取 ${url} 出错了`, "red"));
@@ -265,6 +262,7 @@ class Spider {
       let hotId = (await allModel.Category.findOne({ name: "热门" })).id;
 
       let name = $("p.hero-name").text();
+      let nickname = $("p.hero-title").text();
 
       // 背景 banner
       let banner = "https:" + $(".header-hero>img").attr("src");
@@ -453,6 +451,7 @@ class Spider {
 
       return {
         name,
+        nickname,
         ename: String(ename),
         avatar: `https://game.gtimg.cn/images/yxzj/img201606/heroimg/${ename}/${ename}.jpg`,
         banner,
@@ -660,7 +659,7 @@ class Spider {
                 .replace(/<\/?p>/g, "")
                 .trim()
                 .split("<br>")
-            : "",
+            : [],
           // desc: item?.des1?.length ? item.des1.replace(/<.*?>/g, '').trim() : '',
           // detail: item?.des2?.length ? item.des2.replace(/<.*?>/g, '').trim() : ''
         };
