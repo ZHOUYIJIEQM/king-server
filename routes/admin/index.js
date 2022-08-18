@@ -3,7 +3,7 @@ module.exports = (app) => {
   const express = require("express");
   const path = require("path");
   const jwt = require("jsonwebtoken");
-  const inflection = require("inflection");
+  // const inflection = require("inflection");
   const bcryptjs = require("bcryptjs");
   const allModel = require("require-all")(
     path.join(__dirname, "..", "..", "models")
@@ -15,41 +15,46 @@ module.exports = (app) => {
   const { authority } = require('../../middleWare/access.js')
 
   // 登录接口
-  app.post("/admin/api/login", async (req, res, next) => {
-    const { username, password } = req.body;
-    if (!(username || password)) {
-      res.status(422).send({
-        message: "请输入用户名和密码!",
-      });
-      return next();
-    }
+  app.post(
+    "/admin/api/login", 
+    async (req, res, next) => {
+      const { username, password } = req.body;
+      if (!(username || password)) {
+        res.status(422).send({
+          message: "请输入用户名和密码!",
+        });
+        return next();
+      }
 
-    // 查询用户是否存在
-    const user = await allModel.AdminUser.findOne({ username }).select(
-      "+password"
-    );
-    if (!user) {
-      res.status(422).send({
-        message: "用户名不存在!",
-      });
-      return next();
-    }
+      // 查询用户是否存在
+      const user = await allModel.AdminUser.findOne({ username }).select(
+        "+password"
+      );
+      // console.log(user);
+      if (!user) {
+        res.status(422).send({
+          message: "用户名不存在!",
+        });
+        return next();
+      }
 
-    // 校验密码是否正确
-    const isValid = bcryptjs.compareSync(password, user.password);
-    if (!isValid) {
-      res.status(422).send({
-        message: "密码错误!",
-      });
-      return next();
-    }
+      // 校验密码是否正确
+      const isValid = bcryptjs.compareSync(password, user.password);
+      if (!isValid) {
+        res.status(422).send({
+          message: "密码错误!",
+        });
+        return next();
+      }
 
-    // 返回token
-    const token = jwt.sign({ id: user._id }, app.get("secret"));
-    res.send({
-      message: "登陆成功",
-      token,
-    });
+      // 返回token
+      const token = jwt.sign({ id: user._id }, app.get("secret"));
+      res.send({
+        message: "登陆成功",
+        token,
+        username,
+        level: user.level
+      });
   });
 
   // 通用接口
@@ -112,38 +117,6 @@ module.exports = (app) => {
               as: "cate",
             },
           },
-          {
-            $lookup: {
-              from: "Summoner",
-              localField: "summonersId",
-              foreignField: "id",
-              as: "summonersId",
-            },
-          },
-          {
-            $lookup: {
-              from: "Inscription",
-              localField: "InscriptionId",
-              foreignField: "id",
-              as: "InscriptionId",
-            },
-          },
-          {
-            $lookup: {
-              from: "Items",
-              localField: "downWind.equipment",
-              foreignField: "itemId",
-              as: "downWindEquipment",
-            },
-          },
-          {
-            $lookup: {
-              from: "Items",
-              localField: "upWind.equipment",
-              foreignField: "itemId",
-              as: "upWindEquipment",
-            },
-          },
           { $skip: Number(skipNum) },
           { $limit: Number(pageSize) }
         ])
@@ -159,7 +132,7 @@ module.exports = (app) => {
       })
     },
     async (req, res) => {
-      console.log('next');
+      // console.log('next');
       // 分类
       if (req.modelName === "Category") {
         const allCate = await allModel[req.modelName].find({}).select('-__v').lean()
@@ -190,11 +163,12 @@ module.exports = (app) => {
         
         // console.log('树', cateTree);
 
-        res.send(cateTree)
+        return res.send(cateTree)
       }
-
       
-      
+      // 获取全部
+      let data = await allModel[req.modelName].find()
+      return res.send({data})
     }
   );
 
@@ -204,11 +178,16 @@ module.exports = (app) => {
     authority(),
     async (req, res) => {
       try {
+        // console.log(req.modelName, req.body);
         // const model = await allModel[req.modelName].create(req.body)
-        if (!req.body.name) {
-          return res.status(400).send({ message: "传入参数有误!" })
+        let createNew = await allModel[req.modelName].insertMany([ req.body ])
+        if (req.modelName === 'Items' && createNew.length) {
+          if (!req.body.name) {
+            return res.status(400).send({ message: "传入参数有误!" })
+          }
+          // 补上bug
+          await allModel[req.modelName].findByIdAndUpdate(createNew[0].id, {itemId: createNew[0].id})
         }
-        await allModel[req.modelName].insertMany([ req.body ])
         res.send({message: '新建成功!'})
       } catch (error) {
         return res.status(400).send({ message: "传入参数有误!" })
@@ -236,22 +215,22 @@ module.exports = (app) => {
                 as: "cate",
               },
             },
-            {
-              $lookup: {
-                from: "Summoner",
-                localField: "summonersId",
-                foreignField: "id",
-                as: "summonersId",
-              },
-            },
-            {
-              $lookup: {
-                from: "Inscription",
-                localField: "InscriptionId",
-                foreignField: "id",
-                as: "InscriptionId",
-              },
-            },
+            // {
+            //   $lookup: {
+            //     from: "Summoner",
+            //     localField: "summonersId",
+            //     foreignField: "id",
+            //     as: "summonersId",
+            //   },
+            // },
+            // {
+            //   $lookup: {
+            //     from: "Inscription",
+            //     localField: "InscriptionId",
+            //     foreignField: "id",
+            //     as: "InscriptionId",
+            //   },
+            // },
             {
               $lookup: {
                 from: "Items",
@@ -316,6 +295,28 @@ module.exports = (app) => {
       
       await allModel[req.modelName].findByIdAndDelete(req.params.id);
       res.send({ message: "删除成功!" })
+    }
+  )
+
+  // 搜索
+  commonRouter.post(
+    "/search",
+    authority(),
+    async (req, res) => {
+      // console.log(req.body, req.modelName);
+      // const { name } = req.body
+      // if (['Hero', 'Article'].includes(req.modelName)) {
+      //   let data = await allModel[req.modelName].find({name: new RegExp(name, 'ig')}).populate('cate')
+      //   res.send(data)
+      // }
+
+      if (['Hero', 'Article'].includes(req.modelName)) {
+        let key = Object.keys(req.body).at(0)
+        let value = Object.values(req.body).at(0)
+        let data = await allModel[req.modelName].find({[key]: new RegExp(value, 'ig')}).populate('cate')
+        res.send(data)
+      }
+      
     }
   )
 

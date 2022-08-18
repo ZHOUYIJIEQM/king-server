@@ -36,7 +36,7 @@ module.exports = (app) => {
       },
       {
         $project: {
-          _id: 0,
+          // _id: 0,
           name: 1,
           dataList: { $slice: ["$dataList", 5] },
         },
@@ -180,7 +180,11 @@ module.exports = (app) => {
     // let heroId = await allModel.Hero.findOne({name}).id
     let strategy = await allModel.Strategy.find(
       { heros: name },
-      { _id: 0, content: 0, cate: 0 }
+      { 
+        // _id: 0, 
+        content: 0, 
+        cate: 0 
+      }
     );
     if (strategy.length) {
       for (const item of strategy) {
@@ -202,14 +206,17 @@ module.exports = (app) => {
   resourceRouter.post("/resource", async (req, res, next) => {
     const { type } = req.body;
     if (type === "article") {
-      let article = await allModel.Article.find({ iId: req.body.id });
-      if (!article.length) {
-        article = await allModel.Strategy.find({ newsId: req.body.id });
-      }
+      let article = await allModel.Article.find({ _id: req.body.id });
+      // console.log('文章--', article);
       if (article.length) {
         res.send(article[0]);
       } else {
-        res.send({ msg: `没有 id 为 ${req.body.id} 的文章!` });
+        article = await allModel.Strategy.find({ _id: req.body.id });
+        if (article.length) {
+          res.send(article[0]);
+        } else {
+          res.send({ msg: `没有 id 为 ${req.body.id} 的文章!` });
+        }
       }
       return next();
     }
@@ -371,7 +378,7 @@ module.exports = (app) => {
         },
         {
           __v: 0,
-          _id: 0,
+          // _id: 0,
           cate: 0,
           content: 0,
         }

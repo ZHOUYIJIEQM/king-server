@@ -26,7 +26,7 @@ uploadApi(app, multer)
 // 静态文件夹
 app.use(express.static(__dirname + '/public'));
 // 上传
-app.use('/uploads', express.static(__dirname + '/uploads'))
+// app.use('/uploads', express.static(__dirname + '/uploads'))
 
 
 // 监听其他错误

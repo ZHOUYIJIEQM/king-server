@@ -18,7 +18,7 @@ function sleep(time = 1) {
 async function run() {
   console.log('window terminal 执行开发命令!');
   execSync(`powershell.exe -command ${path.join(__dirname, 'wtOpen.ps1')}`)
-  await sleep(2)
+  await sleep(1)
   
   console.log('vscode 打开项目');
   const folder = [
