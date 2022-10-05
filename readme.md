@@ -31,6 +31,7 @@ db.createUser({
 });
 
 -- 创建单个数据库的管理角色
+use kingdb
 db.createUser({
   user: "kingdbuser",
   pwd: "kingdbpsw",
