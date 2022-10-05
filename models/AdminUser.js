@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const bcrypt = require("bcryptjs");
+const bcryptjs = require("bcryptjs");
 const { Schema } = mongoose;
 
 
@@ -10,7 +10,7 @@ const adminUserSchema = Schema({
     // note: 查询时不返回password
     select: false,
     set(val) {
-      return bcrypt.hashSync(val, 10);
+      return bcryptjs.hashSync(val, bcryptjs.genSaltSync(10))
     },
   },
   level: { type: Number },

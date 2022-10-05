@@ -42,6 +42,7 @@ module.exports = (app, multer) => {
       }) 
     }).single('file')
   }
+  
   /**
    * 返回文件
    * @param {string} uploadPath 保存的路径

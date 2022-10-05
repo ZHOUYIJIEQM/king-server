@@ -1,8 +1,7 @@
-const mongoose = require("mongoose");
-// 连接数据库
-mongoose.connect("mongodb://kingUser:kingPsw@127.0.0.1:27017/kingDb");
-const db = mongoose.connection;
-db.on("error", console.error.bind(console, "MongoDB 连接错误："));
-db.once("open", async () => {
-  console.log("数据库连接成功!");
-});
+const bcryptjs = require("bcryptjs");
+const value = 'abcdef123456'
+let salt = bcryptjs.genSaltSync(10)
+let hash = bcryptjs.hashSync(value, salt)
+// 校验, value 正确返回 true
+let compare = bcryptjs.compareSync(value, hash)
+console.log(compare); // true

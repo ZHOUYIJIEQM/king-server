@@ -5,9 +5,10 @@ const multer = require("multer");
 const dbConnect = require("./utils/db.js");
 const webApi = require("./routes/web/index.js");
 const adminApi = require("./routes/admin/index.js");
-const uploadApi = require('./routes/admin/upload.js')
+const uploadApi = require('./routes/admin/upload.js');
+const path = require("path");
 
-// 自定义bcrypt密钥字符串
+// 自定义jwt密钥字符串
 app.set("secret", "kingAdminNode123456");
 
 // 设置跨域
@@ -23,10 +24,12 @@ adminApi(app);
 // 上传接口
 uploadApi(app, multer)
 
-// 静态文件夹
-app.use(express.static(__dirname + '/public'));
+// 托管静态资源
+app.use('/', express.static(path.join(__dirname, 'public', 'web')));
+app.use('/m', express.static(path.join(__dirname, 'public', 'mobile')));
 // 上传
 // app.use('/uploads', express.static(__dirname + '/uploads'))
+
 
 
 // 监听其他错误

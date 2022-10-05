@@ -87,9 +87,11 @@ module.exports = (app) => {
       }
       const { pageNum = 1, pageSize = 5 } = req.query
       const skipNum = (pageNum - 1) * pageSize
+      // 这个集合有多少条数据
       const total = await allModel[req.modelName].countDocuments()
       let data = null
       
+      // 查找出所有, 但结果里不要带 __v
       let q = allModel[req.modelName].find().select('-__v')
       // 处理排序
       if (req.query?.sortItem?.length && req.query?.orderType?.length) {
@@ -136,32 +138,54 @@ module.exports = (app) => {
       // 分类
       if (req.modelName === "Category") {
         const allCate = await allModel[req.modelName].find({}).select('-__v').lean()
-        const cateTree = allCate.filter(i => i.parent === null)
+        // const cateTree = allCate.filter(i => i.parent === null)
         
         /**
          * 改成树状结果
          * @param {array} cateArr 第一层分类
          * @param {array} cateList 所有的分类
          */
-        const getTree = (cateArr, cateList) => {
-          if (cateArr.length) {
-            for (let index = 0; index < cateArr.length; index++) {
-              let item = cateArr[index];
-              let child = cateList.filter(item1 => {
-                if (item1.parent) {
-                  return item._id.toString() === item1.parent.toString()
-                }
-              })
-              if (child.length) {
-                item.children = child
-                getTree(child, cateList)
+        // const getTree = (cateArr, cateList) => {
+        //   if (cateArr.length) {
+        //     for (let index = 0; index < cateArr.length; index++) {
+        //       let item = cateArr[index];
+        //       let child = cateList.filter(item1 => {
+        //         if (item1.parent) {
+        //           return item._id.toString() === item1.parent.toString()
+        //         }
+        //       })
+        //       if (child.length) {
+        //         item.children = child
+        //         getTree(child, cateList)
+        //       }
+        //     }
+        //   }
+        // }
+        // getTree(cateTree, allCate)
+
+        function arrayToTree(cateArr, firstLevel) {
+          const result = []
+          const itemMap = {}
+          for (const item of cateArr) {
+            const id = item._id
+            const parentId = item.parent
+            if (!itemMap[id]) {
+              itemMap[id] = { children: [] }
+            }
+            const treeItem = Object.assign({}, item, itemMap[id])
+            if (parentId === firstLevel) {
+              result.push(treeItem)
+            } else {
+              if (!itemMap[parentId]) {
+                itemMap[parentId] = { children: [] }
               }
+              itemMap[parentId].children.push(treeItem)
             }
           }
+          return result
         }
-        getTree(cateTree, allCate)
         
-        // console.log('树', cateTree);
+        let cateTree = arrayToTree(allCate, null)
 
         return res.send(cateTree)
       }

@@ -22,10 +22,9 @@ async function run() {
   
   console.log('vscode 打开项目');
   const folder = [
-    String.raw `D:\yijieData\code\vue\king-full\king-server/`,
-    String.raw `D:\yijieData\code\vue\King-full-stack\vue--node-mongodb-wzry`,
-    // String.raw `D:\yijieData\code\vue\king-full\king-mobile`,
-    String.raw `D:\yijieData\code\vue\king-full\king-admin`,
+    String.raw `D:\yijie\code\vue\king-full\king-server`,
+    String.raw `D:\yijie\code\vue\king-full\king-mobile`,
+    String.raw `D:\yijie\code\vue\king-full\king-admin`,
   ]
   for (const item of folder) {
     execSync(`code ${item}`)
