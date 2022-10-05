@@ -50,7 +50,7 @@ module.exports = (app, multer) => {
   const sendFile = (uploadPath) => {
     return async (req, res) => {
       const file = req.file
-      file.url = `http://localhost:3080/upload/${uploadPath}/${req.file.filename}`
+      file.url = `http://127.0.0.1:3080/upload/${uploadPath}/${req.file.filename}`
       res.send(file)
     }
   }
