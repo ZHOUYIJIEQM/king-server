@@ -19,7 +19,7 @@ module.exports = (app, multer) => {
     return multer({ 
       storage: multer.diskStorage({
         destination: function (req, file, cb) {
-          let p = path.join(__dirname, `../../public/upload/${uploadPath}`)
+          let p = path.join(__dirname, `../../public/kingUpload/${uploadPath}`)
           if (!fs.existsSync(p)) {
             console.log('新建文件夹:', p);
             fs.mkdirSync(p, { recursive: true })

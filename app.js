@@ -25,8 +25,10 @@ adminApi(app);
 uploadApi(app, multer)
 
 // 托管静态资源
-app.use('/', express.static(path.join(__dirname, 'public', 'web')));
-app.use('/m', express.static(path.join(__dirname, 'public', 'mobile')));
+app.use('/', express.static(path.join(__dirname, 'public', 'kingAdmin')));
+app.use('/kingm', express.static(path.join(__dirname, 'public', 'kingMobile')));
+app.use('/douyin', express.static(path.join(__dirname, 'public', 'douyin')));
+app.use('/music', express.static(path.join(__dirname, 'public', 'neteaseMusic')));
 // 上传
 // app.use('/uploads', express.static(__dirname + '/uploads'))
 
