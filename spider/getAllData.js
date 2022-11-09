@@ -1,7 +1,6 @@
 /**
  * 爬取王者荣耀官网数据, 并保存到mongo数据库
  */
-
 const mongoose = require("mongoose");
 const cheerio = require("cheerio");
 const axios = require("axios");

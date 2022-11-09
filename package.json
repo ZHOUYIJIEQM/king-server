@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "dev": "nodemon app.js",
-    "spider": "node utils/getAllData.js"
+    "spider": "node spider/getAllData.js"
   },
   "keywords": [],
   "author": "",
