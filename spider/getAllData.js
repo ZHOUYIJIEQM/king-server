@@ -920,6 +920,7 @@ class Spider {
       }
       h.save()
     }
+    await allModel.Hero.updateMany({}, { $unset: { 'relations.$[].relation.$[].ename': '' } })
   }
 
   /**

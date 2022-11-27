@@ -91,7 +91,7 @@ module.exports = async (app) => {
         }
       } catch (error) {
         console.log(error);
-        return res.status(400).send({ message: `${error.message}` });
+        res.status(400).send({ message: `${req.path}: ${error.message}` })
       }
     }
   )
@@ -105,8 +105,8 @@ module.exports = async (app) => {
         await allModel[req.modelName].insertMany([ req.body ])
         res.send({ message: "添加成功!" })
       } catch (error) {
-        console.log('添加失败:', error.message);
-        return res.status(400).send({ message: "传入的参数有误!" });
+        console.log(error);
+        res.status(400).send({ message: `${req.path}: ${error.message}` })
       }
     }
   )
@@ -153,8 +153,8 @@ module.exports = async (app) => {
         }
 
       } catch (error) {
-        console.log('添加失败:', error.message);
-        return res.status(400).send({ message: `传入的id有误! ${error.message}` });
+        console.log(error);
+        res.status(400).send({ message: `${req.path}: ${error.message}` })
       }
     }
   )
@@ -208,8 +208,8 @@ module.exports = async (app) => {
 
         return res.send({ data, total });
       } catch (error) {
-        console.log('搜索失败:', error.message);
-        return res.status(400).send({ message: "传入的参数有误!" });
+        console.log(error);
+        res.status(400).send({ message: `${req.path}: ${error.message}` })
       }
     },
     async (req, res) => {
@@ -229,8 +229,8 @@ module.exports = async (app) => {
         await allModel[req.modelName].findByIdAndUpdate(req.params.id, req.body)
         return res.send({ message: "更新成功!" })
       } catch (error) {
-        console.log('更新数据错误!', error);
-        return res.status(403).send({ message: '参数有误!' })
+        console.log(error);
+        res.status(400).send({ message: `${req.path}: ${error.message}` })
       }
     }
   )
@@ -253,7 +253,7 @@ module.exports = async (app) => {
         return res.send({ message: "删除成功!" })
       } catch (error) {
         console.log(error);
-        res.status(403).send({ message: "删除失败!" })
+        res.status(400).send({ message: `${req.path}: ${error.message}` })
       }
     }
   )

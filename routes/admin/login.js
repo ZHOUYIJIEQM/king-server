@@ -35,6 +35,7 @@ module.exports = app => {
         })
       } catch (error) {
         console.log(error);
+        res.status(400).send({ message: `${req.path}: ${error.message}` })
       }
     }
   )
