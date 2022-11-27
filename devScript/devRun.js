@@ -28,7 +28,7 @@ async function run() {
   ]
   for (const item of folder) {
     execSync(`code ${item}`)
-    await sleep(1)
+    await sleep(0.5)
   }
 }
 

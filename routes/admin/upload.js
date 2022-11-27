@@ -1,86 +1,76 @@
-module.exports = (app, multer) => {
-  const path = require("path")
-  const express = require("express")
-  const fs = require("fs");
-  const router = express.Router()
+// 文件上传
+const multer = require("multer");
+const express = require("express");
+const path = require("path");
+const fs = require("fs");
 
-  // 登录校验
-  const auth = require('../../middleWare/validate.js')
-  // 权限校验
-  const { authority } = require('../../middleWare/access.js')
-  
-  app.use('/admin/api/upload', auth(app), authority(), router)
+module.exports = (app) => {
+  const uploadRouter = express.Router();
+  const fileUploadUrl = app.get("fileUploadUrl");
+  const uploadDir = path.join(__dirname, "../../public/kingUpload/");
+  const validate = require("../../middleWare/validate");
+  const access = require("../../middleWare/access");
+  app.use("/admin/api/upload", validate(app), access(), uploadRouter);
 
   /**
-   * 设置上传 multer
-   * @param {string} uploadPath 保存的路径
+   * 使用 multer
+   * https://github.com/expressjs/multer
+   * @param {string} saveDir 上传文件要保存的文件夹
    */
-  const multerSet = (uploadPath) => {
-    return multer({ 
+  const multerSet = (saveDir) => {
+    return multer({
+      // 磁盘存储引擎可以让你控制文件的存储。
       storage: multer.diskStorage({
         destination: function (req, file, cb) {
-          let p = path.join(__dirname, `../../public/kingUpload/${uploadPath}`)
-          if (!fs.existsSync(p)) {
-            console.log('新建文件夹:', p);
-            fs.mkdirSync(p, { recursive: true })
+          let dir = path.join(uploadDir, saveDir)
+          if (!fs.existsSync(dir)) {
+            console.log("新建文件夹:", dir);
+            fs.mkdirSync(dir, { recursive: true });
           }
-          cb(null, p)
+          cb(null, dir);
         },
         filename: function (req, file, cb) {
-          // console.log('请求file', file);
-          let fileName = ''
+          let fileName = String(Date.now());
           if (req.body.name) {
-            // file.originalname 中文名乱码, 需前端主动传入文件名
-            let name = req.body.name.split('.')
-            fileName = `${name.slice(0, -1).join('')}-${Date.now()}.${name.at(-1)}`
+            // file.originalname 中文乱码, 名称从上传时携带的参数获取
+            let name = req.body.name.split(".");
+            fileName = `${name.slice(0, -1).join("")}-${Date.now()}.${name.at(-1)}`;
           } else {
-            fileName = file.fieldname + '-' + Date.now() + '.' + file.originalname.split('.').at(-1)
+            fileName = file.fieldname + "-" + Date.now() + "." + file.originalname.split(".").at(-1);
           }
-          // console.log('文件名: ', fileName);
-          cb(null, fileName)
+          // 修改了 req.file.filename
+          cb(null, fileName);
         }
-      }) 
-    }).single('file')
+      })
+    }).single("file");
   }
-  
+
   /**
    * 返回文件
-   * @param {string} uploadPath 保存的路径
+   * @param {string} saveDir 保存的路径
    */
-  const sendFile = (uploadPath) => {
+  const sendFile = (saveDir) => {
     return async (req, res) => {
-      const file = req.file
-      file.url = `http://127.0.0.1:3080/upload/${uploadPath}/${req.file.filename}`
-      res.send(file)
-    }
-  }
-  
-  // 物品
-  const items = multerSet('items')
-  router.post('/items', items, sendFile('items'))
-  
+      const file = req.file;
+      file.url = `${fileUploadUrl}/${saveDir}/${req.file.filename}`;
+      res.send(file);
+    };
+  };
+
+  // 装备
+  uploadRouter.post("/items", multerSet("items"), sendFile("items"))
   // 英雄头像
-  const heroAvatar = multerSet('hero')
-  router.post('/hero', heroAvatar, sendFile('hero'))
-
+  uploadRouter.post("/heros", multerSet("heros"), sendFile("heros"))
   // 技能图片
-  const skills = multerSet('skills')
-  router.post('/skills', skills, sendFile('skills'))
-
+  uploadRouter.post("/skills", multerSet("skills"), sendFile("skills"))
   // 皮肤图片
-  const skins = multerSet('skins')
-  router.post('/skins', skins, sendFile('skins'))
-
-  // 视频上传
-  const introduction = multerSet('introduction')
-  router.post('/introduction', introduction, sendFile('introduction'))
-
+  uploadRouter.post("/skins", multerSet("skins"), sendFile("skins"))
   // 文章图片
-  const articles = multerSet('articles')
-  router.post('/articles', articles, sendFile('articles'))
-
+  uploadRouter.post("/articles", multerSet("articles"), sendFile("articles"))
+  // 铭文
+  uploadRouter.post("/inscription", multerSet("inscription"), sendFile("inscription"))
+  // 召唤师技能
+  uploadRouter.post("/summoner", multerSet("summoner"), sendFile("summoner"))
   // 广告轮播图片
-  const advertisement = multerSet('advertisement')
-  router.post('/advertisement', advertisement, sendFile('advertisement'))
-  
-}
+  uploadRouter.post("/advertisement", multerSet("advertisement"), sendFile("advertisement"))
+};

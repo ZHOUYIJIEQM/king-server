@@ -1,21 +1,25 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const bcryptjs = require("bcryptjs");
 const { Schema } = mongoose;
 
-
-const adminUserSchema = Schema({
-  username: { type: String },
-  password: {
-    type: String,
-    // note: 查询时不返回password
-    select: false,
-    set(val) {
-      return bcryptjs.hashSync(val, bcryptjs.genSaltSync(10))
+const adminUserSchema = Schema(
+  {
+    userName: { type: String, required: true },
+    passWord: {
+      type: String,
+      // 查询时默认不返回密码
+      select: false,
+      set(val) {
+        return bcryptjs.hashSync(val, bcryptjs.genSaltSync(10));
+      },
     },
+    status: { type: Boolean, default: true },
+    roles: [String],
+    // time : { type : Date, default: Date.now }
   },
-  level: { type: Number },
-});
+  { timestamps: true }
+);
 
-const AdminUser = mongoose.model("AdminUser", adminUserSchema, 'AdminUser');
+const AdminUser = mongoose.model("AdminUser", adminUserSchema, "AdminUser");
 
 module.exports = AdminUser;

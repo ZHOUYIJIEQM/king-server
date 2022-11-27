@@ -1,3 +1,12 @@
+// let t = await allModel.Hero
+//   .findOne({ name: "廉颇" })
+//   .populate("category")
+//   .populate("inscriptionId")
+//   .populate("summonersId")
+//   .populate({path: "equipment.downWind", select: "name icon"})
+//   .populate({path: "relations.hero.heroIcon", select: "avatar"})
+// this.jsonLog(t)
+
 module.exports = (app) => {
   const mongoose = require("mongoose");
   const express = require("express");
@@ -25,7 +34,7 @@ module.exports = (app) => {
         $lookup: {
           from: "Article",
           localField: "_id",
-          foreignField: "cate",
+          foreignField: "category",
           as: "dataList",
         },
       },
@@ -74,7 +83,7 @@ module.exports = (app) => {
         $lookup: {
           from: "Hero",
           localField: "_id",
-          foreignField: "cate",
+          foreignField: "category",
           as: "dataList",
         },
       },
@@ -106,7 +115,7 @@ module.exports = (app) => {
         $lookup: {
           from: "Strategy",
           localField: "_id",
-          foreignField: "cate",
+          foreignField: "category",
           as: "dataList",
         },
       },
@@ -137,40 +146,32 @@ module.exports = (app) => {
 
   // 所有攻略内容
   strategyRouter.get("/allStrategy", async (req, res) => {
-    let matchItem = [
-      "热门视频",
-      "英雄攻略",
-      "精品栏目",
-      "赛事精品",
-      "精彩视频",
-    ];
+    let matchItem = [ "热门视频", "精品栏目", "赛事精品", "精彩视频" ];
     let data = [];
     for (const item of matchItem) {
       let d = await allModel.Category.aggregate([
         {
           $match: {
-            parent: mongoose.Types.ObjectId(
-              (
-                await allModel.Category.findOne({ name: item })
-              ).id
-            ),
+            // parent: mongoose.Types.ObjectId( ( await allModel.Category.findOne({ name: item }) ).id ),
+            parent: (await allModel.Category.findOne({ name: item }))._id
           },
         },
         {
           $lookup: {
             from: "Strategy",
             localField: "_id",
-            foreignField: "cate",
+            foreignField: "category",
             as: "dataList",
           },
         },
       ]);
-      data.push(d);
+      // data.push(d);
+      data.push({ name: item, list: d })
     }
     res.send(data);
   });
 
-  // 英雄攻略
+  // 根据传入英雄名称获取英雄攻略
   strategyRouter.post("/heroStrategy", async (req, res) => {
     const { name } = req.body;
     let data = {
@@ -180,10 +181,10 @@ module.exports = (app) => {
     // let heroId = await allModel.Hero.findOne({name}).id
     let strategy = await allModel.Strategy.find(
       { heros: name },
-      { 
-        // _id: 0, 
-        content: 0, 
-        cate: 0 
+      {
+        // _id: 0,
+        content: 0,
+        cate: 0,
       }
     );
     if (strategy.length) {
@@ -229,9 +230,9 @@ module.exports = (app) => {
         {
           $lookup: {
             from: "Category",
-            localField: "cate",
+            localField: "category",
             foreignField: "_id",
-            as: "cate",
+            as: "category",
           },
         },
         {
@@ -359,17 +360,18 @@ module.exports = (app) => {
   raceRouter.post("/center", async (req, res, next) => {
     const { name, pageNum = 1, pageSize = 10 } = req.body;
     let parentId = (await allModel.Category.findOne({ name: "赛事中心" }))?.id;
-    let raceId = (await allModel.Category.findOne({ parent: parentId, name }))?.id;
+    let raceId = (await allModel.Category.findOne({ parent: parentId, name }))
+      ?.id;
     let count = await allModel.Article.find({
       cate: {
         $in: [raceId],
-      }
+      },
     }).count();
     if (count <= 0) {
       res.send({ total: count, dataList: [], name });
     } else {
-      let skip = (pageNum - 1) * pageSize
-      skip = skip >= count ? (count - pageSize) : skip
+      let skip = (pageNum - 1) * pageSize;
+      skip = skip >= count ? count - pageSize : skip;
       let data = await allModel.Article.find(
         {
           cate: {
@@ -383,8 +385,8 @@ module.exports = (app) => {
           content: 0,
         }
       )
-      .skip(skip)
-      .limit(pageSize);
+        .skip(skip)
+        .limit(pageSize);
       res.send({ total: count, dataList: data, name });
     }
   });

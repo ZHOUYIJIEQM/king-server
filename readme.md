@@ -91,7 +91,7 @@ mongorestore -u kingdbuser -p kingdbpsw -h 127.0.0.1:27017 -d kingdb --dir .\bac
 ```
 3. 如果导出数据库, 导出命令:
 ```bash
-mongodump -u kingdbuser -p kingdbpsw -h 127.0.0.1:27017 -d kingdb -o backUpData
+mongodump -u kingdbuser -p kingdbpsw -h 127.0.0.1:27017 -d kingdb -o backUpDataBase
 ```
 4. 因为```mongo 5```没有 ```mongodump```, ```mongorestore```, 需要另外下载[database-tools](https://www.mongodb.com/try/download/database-tools)
 

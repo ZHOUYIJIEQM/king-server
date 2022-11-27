@@ -1,14 +1,14 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const heroSchema = Schema({
-  name: { type: String },
-  nickname: { type: String },
-  ename: { type: String },
-  avatar: { type: String },
-  banner: { type: String },
-  photo: { type: String }, 
-  cate: [ { type: Schema.Types.ObjectId, ref: "Category", }, ],
+  name: { type: String, required: true },
+  nickname: String,
+  ename: String,
+  avatar: String,
+  backgroundImg: String,
+  photo: String,
+  category: [{ type: Schema.Types.ObjectId, ref: "Category" }],
   //难度等级等
   scores: {
     difficulty: { type: Number, default: 0 },
@@ -17,77 +17,42 @@ const heroSchema = Schema({
     survive: { type: Number, default: 0 },
   },
   //皮肤
-  skins: [
-    {
-      img: { type: String },
-      name: { type: String },
-    },
-  ],
+  skins: [{ img: String, name: String }],
   // 技能
-  skills: [
-    {
-      id: { type: String, default: "" },
-      icon: { type: String, default: "" },
-      name: { type: String, default: "" },
-      delay: { type: String, default: "" },
-      desc: { type: String, default: "" },
-      tips: { type: String, default: "" },
-    },
-  ],
+  skills: [{
+    id: { type: String, default: "" },
+    icon: { type: String, default: "" },
+    name: { type: String, default: "" },
+    delay: { type: String, default: "" },
+    desc: { type: String, default: "" },
+    tips: { type: String, default: "" },
+  }],
   // 升级加点 建议
-  levelUp: [
-    { icon: String, id: String, },
-  ],
+  levelUp: [ String ],
+  // levelUp: [{ icon: String, id: String }],
   // 铭文
-  InscriptionId: [
-    {type: String, ref: 'Inscription'}
-  ],
+  inscriptionId: [{ type: Schema.Types.ObjectId, ref: "Inscription" }],
   // 召唤师技能
-  summonersId: [
-    {type: String, ref: 'Summoner'}
-  ],
-  //顺风出装
-  downWind: {
-    equipment: [
-      {
-        // type: Schema.Types.ObjectId,
-        // todo: 依赖武器, 待修改
-        type: String,
-        default: "",
-        ref: "Items",
-      },
-    ],
+  summonersId: [{ type: Schema.Types.ObjectId, ref: "Summoner" }],
+  // todo: 此处有改动
+  equipment: {
+    // 顺风出装
+    downWind: [{ type: Schema.Types.ObjectId, ref: "Items" }],
+    // 逆风出装
+    upWind: [{ type: Schema.Types.ObjectId, ref: "Items" }],
   },
-  //逆风出装
-  upWind: {
-    equipment: [
-      {
-        // type: Schema.Types.ObjectId,
-        // todo: 依赖武器, 待修改
-        type: String,
-        default: "",
-        ref: "Items",
-      },
-    ],
-  },
-  tips: [
-    {
-      title: String,
+  tips: [{
+    title: String,
+    content: String,
+  }],
+  relations: [{
+    title: String,
+    relation: [{
+      hero: { type: Schema.Types.ObjectId, ref: "Hero", default: null },
+      ename: String,
       content: String,
-    },
-  ],
-  relations: [
-    {
-      title: String,
-      hero: [
-        {
-          ename: String,
-          icon: String,
-          content: String,
-        },
-      ],
-    },
-  ],
+    }],
+  }],
 });
 
 const Hero = mongoose.model("Hero", heroSchema, "Hero");

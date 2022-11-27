@@ -2,10 +2,10 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const InscriptionSchema = Schema({
+  name: { type: String, required: true },
   id: String,
   type: String,
-  grade: String,
-  name: String,
+  grade: Number,
   img: String,
   desc: [String],
 });

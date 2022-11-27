@@ -1,8 +1,8 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const adSchema = Schema({
-  name: String,
+  name: { type: String, required: true },
   items: [
     {
       img: String,
@@ -11,6 +11,6 @@ const adSchema = Schema({
   ],
 });
 
-const Ad = mongoose.model("Ad", adSchema, 'Ad');
+const Ad = mongoose.model("Ad", adSchema, "Ad");
 
 module.exports = Ad;

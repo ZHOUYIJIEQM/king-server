@@ -5,7 +5,9 @@
   "main": "app.js",
   "scripts": {
     "dev": "nodemon app.js",
-    "spider": "node spider/getAllData.js"
+    "spider": "node spider/getAllData.js",
+    "backup": "mongodump -u kingdbuser -p kingdbpsw -h 127.0.0.1:27017 -d kingdb -o backUpDataBase",
+    "restore": "mongorestore -u kingdbuser -p kingdbpsw -h 127.0.0.1:27017 -d kingdb --dir backUpDataBase/kingdb/"
   },
   "keywords": [],
   "author": "",

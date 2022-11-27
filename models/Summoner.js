@@ -2,9 +2,9 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const summonerSchema = Schema({
-  id: { type: String, require: true },
-  name: { type: String, require: true },
-  rank: String,
+  name: { type: String, required: true },
+  id: String,
+  rank: Number,
   img: String,
   description: String,
 });

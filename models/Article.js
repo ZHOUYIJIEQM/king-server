@@ -1,20 +1,14 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-const articleSchema = Schema(
-  {
-    // 文章id
-    iId: String,
-    title: String,
-    cate: [{ type: Schema.Types.ObjectId, ref: "Category" }],
-    // url: String,
-    content: String,
-    createdTime: String,
-  },
-  // {
-  //   timestamps: true,
-  // }
-);
+const articleSchema = Schema({
+  name: { type: String, required: true },
+  content: String,
+  // 文章id
+  id: String,
+  category: [{ type: Schema.Types.ObjectId, ref: "Category" }],
+  createdTime: { type : Date, default: Date.now },
+});
 
 const Article = mongoose.model("Article", articleSchema, "Article");
 
