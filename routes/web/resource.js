@@ -19,6 +19,10 @@ module.exports = async (app) => {
         if (id) {
           article = await allModel.Article.findOne({ _id: id });
         }
+        if (!article) {
+          article = await allModel.Strategy.findOne({ _id: id })
+        }
+        console.log(article);
         return res.send(article)
       }
 
@@ -32,7 +36,7 @@ module.exports = async (app) => {
         }
         let hero = await query.select("-__v")
           .populate({ path: "category", select: "-_id name" })
-          .populate({ path: "inscriptionId", select: "-_id name img" })
+          .populate({ path: "inscriptionId", select: "-_id name img desc" })
           .populate({ path: "summonersId", select: "-_id name img" })
           .populate({ path: "equipment.downWind", select: "-_id name icon" })
           .populate({ path: "equipment.upWind", select: "-_id name icon" })

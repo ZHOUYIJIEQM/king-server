@@ -34,7 +34,7 @@ module.exports = async (app) => {
             },
           },
         ]);
-        data.push({ name: item, list: d })
+        data.push({ name: item, dataList: d })
       }
       res.send(data);
     } catch (error) {
