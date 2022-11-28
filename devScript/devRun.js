@@ -24,8 +24,6 @@ async function run() {
   const folder = [
     String.raw `D:\yijie\code\vue\king-full\king-server`,
     String.raw `D:\yijie\code\vue\king-full\king-mobile`,
-    // todo: 删除掉
-    String.raw `D:\yijie\code\vue\king-full\king-mobile11`,
     String.raw `D:\yijie\code\vue\king-full\king-admin`,
   ]
   for (const item of folder) {

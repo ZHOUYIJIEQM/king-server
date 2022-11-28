@@ -34,7 +34,6 @@ const heroSchema = Schema({
   inscriptionId: [{ type: Schema.Types.ObjectId, ref: "Inscription" }],
   // 召唤师技能
   summonersId: [{ type: Schema.Types.ObjectId, ref: "Summoner" }],
-  // todo: 此处有改动
   equipment: {
     // 顺风出装
     downWind: [{ type: Schema.Types.ObjectId, ref: "Items" }],
