@@ -28,6 +28,7 @@ module.exports = async (app) => {
 
       if (type === "hero") {
         let query = null
+        console.log(name);
         if (name) {
           query = allModel.Hero.findOne({ name });
         }
@@ -42,13 +43,10 @@ module.exports = async (app) => {
           .populate({ path: "equipment.upWind", select: "-_id name icon" })
           .populate({ path: "relations.relation.hero", select: "-_id name avatar" }).lean()
         hero.category = hero.category.map(i => i.name)
-        hero.levelUp = hero.levelUp.map(i => {
-          let index = hero.skills.findIndex(item => item.id === i)
-          return {
-            name: hero.skills[index].name,
-            icon: hero.skills[index].icon
-          }
-        })
+        hero.levelUp = hero.levelUp.map(i => ({
+          name: hero.skills[Number(i)].name,
+          icon: hero.skills[Number(i)].icon
+        }))
         return res.send(hero)
       }
 

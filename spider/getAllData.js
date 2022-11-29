@@ -807,11 +807,8 @@ class Spider {
       const two = new RegExp(`副升</span>.*?<img src="(.*?)".*?<span.*?data-upskill="(.*?)">`, "imgs");
       const levelUpSkill = [...data.matchAll(one), ...data.matchAll(two)];
       levelUpSkill.forEach((i) => {
-        // levelUp.push({
-        //   icon: "https:" + i[1],
-        //   id: i[2],
-        // })
-        levelUp.push(i[2])
+        let index = skills.findIndex(ii => ii.id == i[2])
+        index !== -1 && levelUp.push(index)
       });
       log && this.jsonLog(levelUp);
 
