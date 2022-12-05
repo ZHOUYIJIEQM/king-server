@@ -227,6 +227,7 @@ module.exports = async (app) => {
     async (req, res) => {
       try {
         await allModel[req.modelName].findByIdAndUpdate(req.params.id, req.body)
+        // console.log(req.params.id, req.body);
         return res.send({ message: "更新成功!" })
       } catch (error) {
         console.log(error);

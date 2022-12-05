@@ -22,24 +22,34 @@ module.exports = (app) => {
       // 磁盘存储引擎可以让你控制文件的存储。
       storage: multer.diskStorage({
         destination: function (req, file, cb) {
-          let dir = path.join(uploadDir, saveDir)
-          if (!fs.existsSync(dir)) {
-            console.log("新建文件夹:", dir);
-            fs.mkdirSync(dir, { recursive: true });
+          try {
+            let dir = path.join(uploadDir, saveDir)
+            if (!fs.existsSync(dir)) {
+              console.log("新建文件夹:", dir);
+              fs.mkdirSync(dir, { recursive: true });
+            }
+            cb(null, dir);
+          } catch (error) {
+            console.log(error);
           }
-          cb(null, dir);
         },
         filename: function (req, file, cb) {
-          let fileName = String(Date.now());
-          if (req.body.name) {
-            // file.originalname 中文乱码, 名称从上传时携带的参数获取
-            let name = req.body.name.split(".");
-            fileName = `${name.slice(0, -1).join("")}-${Date.now()}.${name.at(-1)}`;
-          } else {
-            fileName = file.fieldname + "-" + Date.now() + "." + file.originalname.split(".").at(-1);
+          try {
+            // console.log(req.body);
+            let fileName = String(Date.now());
+            if (req.body.name) {
+              // file.originalname 中文乱码, 名称从上传时携带的参数获取
+              let name = req.body.name.split(".");
+              fileName = `${name.slice(0, -1).join("")}-${Date.now()}.${name.at(-1)}`;
+              // fileName = req.body.name
+            } else {
+              fileName = file.fieldname + "-" + Date.now() + "." + file.originalname.split(".").at(-1);
+            }
+            // 修改了 req.file.filename
+            cb(null, fileName);
+          } catch (error) {
+            console.log(error);
           }
-          // 修改了 req.file.filename
-          cb(null, fileName);
         }
       })
     }).single("file");

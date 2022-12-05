@@ -56,12 +56,12 @@ db.dropUser("user_name")
 db.dropAllUsers() 
 ```
 2. 找到 ```mongo``` 安装目录下 ```bin``` 与 ```mongo.exe```同目录, 修改 ```mongod.cfg```
-```
+```bash
 security:
   authorization: enabled
 ```
 3. 重启 ```MongoDB``` 服务, 以管理员身份打开命令窗口
-```
+```bash
 net stop MongoDB
 net start MongoDB
 ```
@@ -83,32 +83,41 @@ yarn
 npm i
 ```
 
-## 爬取[王者荣耀移动端官网](https://pvp.qq.com/m/m201706/index.shtml), 采集需要的数据
-1. 运行```yarn spider```命令, 从王者荣耀移动端官网重新爬取数据
+## 爬虫提取[王者荣耀移动端官网](https://pvp.qq.com/m/m201706/index.shtml)的数据
+1. 第一次运行先爬取数据
+```bash
+yarn spider
+```
 2. 也可以用```backUpDataBase```里备份的数据库, 重新导入数据, 因为设置了密码, 命令需要有账号密码, 导入命令:
 ```bash
-mongorestore -u kingdbuser -p kingdbpsw -h 127.0.0.1:27017 -d kingdb --dir .\backUpDataBase\kingdb\
+yarn restore
+# 或者命令行执行
+mongorestore -u kingdbuser -p kingdbpsw -h 127.0.0.1:27017 -d kingdb --dir backUpDataBase/kingdb/
 ```
-3. 如果导出数据库, 导出命令:
+3. 如果备份/导出数据库, 导出命令:
 ```bash
+yarn backup
+# 或者命令行执行
 mongodump -u kingdbuser -p kingdbpsw -h 127.0.0.1:27017 -d kingdb -o backUpDataBase
 ```
-4. 因为```mongo 5```没有 ```mongodump```, ```mongorestore```, 需要另外下载[database-tools](https://www.mongodb.com/try/download/database-tools)
+4. ```mongo 5```没有 ```mongodump```, ```mongorestore```, 需要另外下载[database-tools](https://www.mongodb.com/try/download/database-tools)
 
 ## ```express```设置
 ```js
 // 设置跨域
 app.use(cors());
 // 请求体转为json对象
-app.use(express.json());
+const bodyParser = require("body-parser");
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 ```
 
-## 根据前端需要分为移动端接口, 后台管理接口
+## 根据前端项目需要分为移动端接口, 后台管理接口
 ### 后台管理系统的接口
 > 用于管理数据库里的数据, 方便修改
 #### 登录
 1. 从请求体获取用户名, 密码, 可以稍做一些判断, 比如: 密码是否达到8位长度, 不符合返回错误提示
-2. 从数据库查询用户, 包括密码, 存在就需要判断密码是否正确, 密码使用```bcrypt.js```加密后存放在数据库中, 所以校验密码时, 需要对比
+2. 从数据库查询用户, 包括密码, 存在就需要判断密码是否正确, 密码使用[```bcrypt.js```](https://github.com/kelektiv/node.bcrypt.js)加密后存放在数据库中, 所以需要校验
 ```js
 // bcrypt.js的使用
 const bcryptjs = require("bcryptjs");
@@ -300,5 +309,4 @@ app.use(
   auth(app), authority(), 
   router
 )
-
 ```
