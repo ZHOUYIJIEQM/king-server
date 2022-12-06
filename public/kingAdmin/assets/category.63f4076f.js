@@ -1,0 +1,1 @@
+import{r as e}from"./el-loading.dbcf95cb.js";function o(){return e({url:"/category"})}function u(t){return e({url:"/category",method:"post",data:t})}function n(t,r){return e({url:`/category/${t}`,method:"put",data:r})}function c(t){return e({url:`/category/${t}`,method:"delete"})}export{u as c,c as d,o as g,n as u};

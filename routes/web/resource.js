@@ -22,13 +22,13 @@ module.exports = async (app) => {
         if (!article) {
           article = await allModel.Strategy.findOne({ _id: id })
         }
-        console.log(article);
+        // console.log(article);
         return res.send(article)
       }
 
       if (type === "hero") {
         let query = null
-        console.log(name);
+        // console.log(name);
         if (name) {
           query = allModel.Hero.findOne({ name });
         }
