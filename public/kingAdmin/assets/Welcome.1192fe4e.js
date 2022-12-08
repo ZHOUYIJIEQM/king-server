@@ -1,2 +1,0 @@
-import{_ as s}from"./plugin-vue_export-helper.21dcd24c.js";import{c as a,e as t,t as o,a$ as c,b0 as _,j as n}from"./index.101a8097.js";const d={},r=e=>(c("data-v-74ebeb3e"),e=e(),_(),e),i={class:"main-page"},p={class:"content"},l=["data-text"],m=r(()=>t("pre",null,`\r
-`,-1));function g(e,h){return n(),a("div",i,[t("div",p,[t("span",{class:"title spotlight","data-text":e.$t("text.kingBg")},o(e.$t("text.kingBg")),9,l),m])])}var f=s(d,[["render",g],["__scopeId","data-v-74ebeb3e"]]);export{f as default};

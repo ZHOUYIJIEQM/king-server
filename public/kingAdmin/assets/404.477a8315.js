@@ -1,1 +1,0 @@
-import{_ as e}from"./plugin-vue_export-helper.21dcd24c.js";import{c as o,t as a,j as _}from"./index.101a8097.js";const n={},s=["data-text"];function r(t,c){return _(),o("div",{class:"main-page not-fount spotlight","data-text":t.$t("text.notFound")},a(t.$t("text.notFound")),9,s)}var p=e(n,[["render",r],["__scopeId","data-v-fe893228"]]);export{p as default};
